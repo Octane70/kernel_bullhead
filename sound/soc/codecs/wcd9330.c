@@ -40,6 +40,17 @@
 #include "wcdcal-hwdep.h"
 #include "wcd_cpe_core.h"
 
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+#include <linux/input/sweep2wake.h>
+#endif
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+#define SOVC_TOUCH_OFF_DELAY	5000	// Touch off delay time (ms)
+
+extern int synaptics_rmi4_touch_off_trigger(unsigned int delay);
+static DEFINE_MUTEX(sovc_lock);
+
 enum {
 	VI_SENSE_1,
 	VI_SENSE_2,
@@ -5369,6 +5380,11 @@ static int tomtom_startup(struct snd_pcm_substream *substream,
 	pr_debug("%s(): substream = %s  stream = %d\n" , __func__,
 		 substream->name, substream->stream);
 
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+	dt2w_switch_tmp = 1;
+#endif
+	mutex_unlock(&sovc_lock);
+
 	return 0;
 }
 
@@ -5377,6 +5393,11 @@ static void tomtom_shutdown(struct snd_pcm_substream *substream,
 {
 	pr_debug("%s(): substream = %s  stream = %d\n" , __func__,
 		 substream->name, substream->stream);
+
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+	dt2w_switch_tmp = 0;
+#endif
+
 }
 
 int tomtom_mclk_enable(struct snd_soc_codec *codec, int mclk_enable, bool dapm)

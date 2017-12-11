@@ -1072,4 +1072,12 @@ config INPUT_MT_WRAPPER
 
 	  If unsure, say N.
 
+config TOUCHSCREEN_SWEEP2WAKE
+	tristate "Sweep2Wake for touchscreens"
+	default n
+
+config TOUCHSCREEN_DOUBLETAP2WAKE
+	tristate "DoubleTap2Wake for touchscreens"
+	default n
+
 endif
